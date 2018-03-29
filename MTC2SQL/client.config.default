@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataClient>
+
+  <DeviceFinder/>
+
+  <DataServers>
+    
+    <DataServer hostname="localhost">
+      <DataGroups>
+        <DataGroup name="monitor" captureMode="ARCHIVE">
+          <Deny>
+            <Filter>ACCUMULATED_TIME</Filter>
+            <Filter>ANGLE</Filter>
+            <Filter>AXIS_FEEDRATE</Filter>
+            <Filter>BLOCK</Filter>
+            <Filter>CLOCK_TIME</Filter>
+            <Filter>LINE</Filter>
+            <Filter>LOAD</Filter>
+            <Filter>PATH_FEEDRATE</Filter>
+            <Filter>PATH_POSITION</Filter>
+            <Filter>POSITION</Filter>
+            <Filter>ROTARY_VELOCITY</Filter>
+            <Filter>VELOCITY</Filter>
+          </Deny>
+          <Include>
+            <DataGroup>snapshot</DataGroup>
+          </Include>
+        </DataGroup>
+        <DataGroup name="snapshot" captureMode="INCLUDE">
+          <Allow>
+            <Filter>*</Filter>
+          </Allow>
+        </DataGroup>
+        <DataGroup name="all" captureMode="CURRENT">
+          <Allow>
+            <Filter>*</Filter>
+          </Allow>
+        </DataGroup>
+      </DataGroups>
+      <Buffer path="Buffers"/>
+    </DataServer>
+
+  </DataServers>
+  
+</DataClient>

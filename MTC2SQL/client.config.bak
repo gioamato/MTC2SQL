@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataClient xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <DeviceFinder scanInterval="0" />
+  <Devices>
+    <Device deviceId="JYXWLJH4ZRU9DWJB50CNZ7KSSXO" address="192.168.43.161" physicalAddress="207C8F7C5E15" port="5000" deviceName="Mazak1" interval="500" />
+    <Device deviceId="UTYNXBFJF1XTU1L2BSGZUOWI0" address="192.168.43.161" physicalAddress="207C8F7C5E15" port="5000" deviceName="Fanuc1" interval="500" />
+    <Device deviceId="91a47606-8660-408b-860a-38ed1236af44" address="192.168.43.161" port="5000" deviceName="VMC-3Axis" interval="5001" />
+  </Devices>
+  <DataServers>
+    <DataServer hostname="localhost" port="3306" useSSL="false" sendInterval="1000">
+      <DataGroups>
+        <DataGroup name="monitor" captureMode="ARCHIVE">
+          <Allow />
+          <Deny>
+            <Filter>ACCUMULATED_TIME</Filter>
+            <Filter>AXIS_FEEDRATE</Filter>
+            <Filter>BLOCK</Filter>
+            <Filter>CLOCK_TIME</Filter>
+            <Filter>LINE</Filter>
+            <Filter>PATH_FEEDRATE</Filter>
+            <Filter>PATH_POSITION</Filter>
+            <Filter>POSITION</Filter>
+            <Filter>ROTARY_VELOCITY</Filter>
+            <Filter>VELOCITY</Filter>
+          </Deny>
+          <Include>
+            <DataGroup>snapshot</DataGroup>
+          </Include>
+        </DataGroup>
+        <DataGroup name="snapshot" captureMode="INCLUDE">
+          <Allow>
+            <Filter>*</Filter>
+          </Allow>
+          <Deny />
+          <Include />
+        </DataGroup>
+        <DataGroup name="all" captureMode="CURRENT">
+          <Allow>
+            <Filter>*</Filter>
+          </Allow>
+          <Deny />
+          <Include />
+        </DataGroup>
+      </DataGroups>
+      <Buffer path="Buffers" maxFileSize="104857600" />
+    </DataServer>
+    <DataServer hostname="10.137.190.109" port="3307" useSSL="true" sendInterval="500">
+      <DataGroups>
+        <DataGroup name="monitor" captureMode="ARCHIVE">
+          <Allow />
+          <Deny>
+            <Filter>ACCUMULATED_TIME</Filter>
+            <Filter>AXIS_FEEDRATE</Filter>
+            <Filter>BLOCK</Filter>
+            <Filter>CLOCK_TIME</Filter>
+            <Filter>LINE</Filter>
+            <Filter>PATH_FEEDRATE</Filter>
+            <Filter>PATH_POSITION</Filter>
+            <Filter>POSITION</Filter>
+            <Filter>ROTARY_VELOCITY</Filter>
+            <Filter>VELOCITY</Filter>
+          </Deny>
+          <Include>
+            <DataGroup>snapshot</DataGroup>
+          </Include>
+        </DataGroup>
+        <DataGroup name="snapshot" captureMode="INCLUDE">
+          <Allow>
+            <Filter>*</Filter>
+          </Allow>
+          <Deny />
+          <Include />
+        </DataGroup>
+        <DataGroup name="all" captureMode="CURRENT">
+          <Allow>
+            <Filter>*</Filter>
+          </Allow>
+          <Deny />
+          <Include />
+        </DataGroup>
+      </DataGroups>
+      <Buffer path="Buffers" maxFileSize="104857600" />
+    </DataServer>
+  </DataServers>
+</DataClient>

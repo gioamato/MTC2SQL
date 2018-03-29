@@ -1,0 +1,599 @@
+﻿<Window x:Class="MTC2SQL.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MTC2SQL"
+        mc:Ignorable="d"
+        ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen"
+        Title="MTC2SQL" Height="650" Width="1000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!--Menu Bar-->
+        <Menu DockPanel.Dock="Top" RenderTransformOrigin="0.501,0.926" Margin="0" VerticalContentAlignment="Stretch" Height="25">
+            <MenuItem Header="File">
+                <!--菜单项为MenuItem，文字使用属性 Header-->
+                <MenuItem Name="reloadConfiguration" Header="Reload Configuration" Click="ReloadConfiguration_Click"></MenuItem>
+                <MenuItem Header="Exit" Click="Exit_Click"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Devices">
+                <MenuItem Header="Find Devices"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="DataClient"></MenuItem>
+            <MenuItem Header="About" Click="About_Click"></MenuItem>
+        </Menu>
+        <TabControl Grid.Row="1" >
+            <!--Devices Tab-->
+            <TabItem Header="Devices" Height="25" MinWidth="120">
+                <Grid Grid.Column="1" Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+
+                        <!--Find Devices-->
+                        <Button Content="FindDevices"  Margin="10,0,10,0" Click="FindDevices_Click"></Button>
+
+                        <!--Find Devices Automatically-->
+                        <CheckBox Content="Find Devices Automatically" IsChecked="{Binding FindDevicesAutomatically, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+
+                    </StackPanel>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!--设备列表-->
+                        <DataGrid ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" BorderThickness="0,1,0,1" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" SelectionMode="Single" CanUserResizeColumns="True" SelectionChanged="DataGrid_SelectionChanged">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="*" Header="Device Name" Binding="{Binding DeviceName}"/>
+                                <DataGridTextColumn Width="*" Header="Address" Binding="{Binding Address}"/>
+                                <DataGridTextColumn Width="0.5*" Header="Port" Binding="{Binding Port}"/>
+                                <DataGridTextColumn Width="*" Header="Physical Address" Binding="{Binding PhysicalAddress}"/>
+                                <DataGridTextColumn Width="0.5*" Header="Interval" Binding="{Binding Interval}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"></GridSplitter>
+
+                        <!--Device Properties-->
+                        <Border Grid.Column="2" MinWidth="300"  BorderThickness="1,0,0,0" Padding="15,0,0,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedDevice}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <StackPanel>
+
+                                <Label Content="Device 属性" Margin="0,0,0,5"/>
+
+                                <!--Address-->
+                                <Label Content="Address"/>
+                                <TextBox Text="{Binding SelectedDeviceAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <!--Port-->
+                                <Label Content="Port"/>
+                                <TextBox Width="100" HorizontalAlignment="Left" Text="{Binding SelectedDevicePort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <!--Device Name-->
+                                <Label Content="Device Name"/>
+                                <TextBox Text="{Binding SelectedDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <!--Interval-->
+                                <Label Content="Interval"/>
+                                <TextBox Width="100" HorizontalAlignment="Left" Text="{Binding SelectedDeviceInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,40,0,0">
+
+                                    <!--Delete Button-->
+                                    <Button Margin="0,0,15,0" Padding="15,8" Content="Delete" Click="DeleteDevice_Clicked" Height="34" />
+
+                                    <!--Save Button-->
+                                    <Button Margin="0,0,15,0" Padding="15,8" Content="Save" Click="SaveDevice_Clicked" Height="34">
+                                        <Button.Style>
+                                            <Style TargetType="Button" >
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedDeviceAddress}" Value="{x:Null}">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SelectedDeviceName}" Value="{x:Null}">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SelectedDeviceAddress}" Value="">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SelectedDeviceName}" Value="">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                </StackPanel>
+
+                            </StackPanel>
+
+                        </Border>
+                    </Grid>
+
+                    <!--Add Device Panel-->
+                    <Border Grid.Row="2"  BorderThickness="0,1,0,0">
+
+                        <Grid Margin="15,0,15,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="Add a New Device"  Margin="0,0,0,5"/>
+
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!--Address-->
+                                    <StackPanel>
+                                        <Label Content="Address"/>
+                                        <TextBox Text="{Binding AddDeviceAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <TextBox.Resources>
+                                                <VisualBrush x:Key="HintText" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left">
+                                                    <VisualBrush.Visual>
+                                                        <TextBlock FontStyle="Italic" Text="提示文字"></TextBlock>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </TextBox.Resources>
+                                        </TextBox>
+                                    </StackPanel>
+
+                                    <!--Port-->
+                                    <StackPanel Grid.Column="1" MinWidth="100">
+                                        <Label Content="Port"/>
+                                        <TextBox Text="{Binding AddDevicePort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+
+                                </Grid>
+
+                                <!--Device Name-->
+                                <StackPanel Grid.Row="2">
+                                    <Label Content="Device Name"/>
+                                    <TextBox Text="{Binding AddDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <!--Add Device Button-->
+                            <Button Grid.Column="1" Padding="15,8" Content="Add Device"  VerticalAlignment="Bottom" Margin="20,0,0,0" Height="34" Click="AddDevice_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding AddDeviceAddress}" Value="{x:Null}">
+                                                <Setter Property="IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding AddDeviceName}" Value="{x:Null}">
+                                                <Setter Property="IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding AddDeviceAddress}" Value="">
+                                                <Setter Property="IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding AddDeviceName}" Value="">
+                                                <Setter Property="IsEnabled" Value="false"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                        </Grid>
+
+                    </Border>
+                </Grid>
+
+            </TabItem>
+
+            <!--MySQL Tab-->
+            <!--<TabItem Header="MySQL" Height="25" MinWidth="120">
+                <Grid Grid.Column="1" Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="64*"/>
+                        <ColumnDefinition Width="17*"/>
+                        <ColumnDefinition Width="900*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        --><!--MySQL List--><!--
+                        <ListBox ItemsSource="{Binding MySQLItems}" SelectedItem="{Binding SelectedMySQL,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" MinWidth="125" BorderThickness="0,0,1,0">
+                            <ListBox.Resources>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="MinHeight" Value="35"/>
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
+
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+                        <Border Grid.Column="2" MinWidth="300" BorderThickness="1,0,0,0" Padding="15,0,0,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedMySQL}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <StackPanel>
+                                <Label Content="MySQL Properties" Margin="0,0,0,5"/>
+
+                                --><!--MySQL Properties--><!--
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedMySQLServer}" Value="localhost">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    --><!--Server--><!--
+                                    <Label Content="Server"/>
+                                    <TextBox Text="{Binding SelectedMySQLServer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    --><!--User--><!--
+                                    <Label Content="User"/>
+                                    <TextBox Text="{Binding SelectedMySQLUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    --><!--Database--><!--
+                                    <Label Content="Database"/>
+                                    <TextBox Text="{Binding SelectedMySQLDatabase, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    --><!--Port--><!--
+                                    <Label Content="Port"/>
+                                    <TextBox Width="100" HorizontalAlignment="Left" Text="{Binding SelectedMySQLPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    --><!--Password--><!--
+                                    <Label Content="Password"/>
+                                    <TextBox Text="{Binding SelectedMySQLPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,40,0,0">
+
+                                        --><!--Delete Button--><!--
+                                        <Button Margin="0,0,15,0" Padding="15,8" Content="Delete" Click="DeleteMySQL_Click" Height="34" />
+
+                                        --><!--Save Button--><!--
+                                        <Button Margin="0,0,15,0" Padding="15,8" Content="Save" Click="SaveMySQL_Click" Height="34">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedMySQLServer}" Value="{x:Null}">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding SelectedMySQLServer}" Value="">
+                                                            <Setter Property="IsEnabled" Value="false"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    --><!--Add MySQL Panel--><!--
+                    <Border Grid.Row="1" BorderThickness="0,1,0,0" Grid.ColumnSpan="3">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            --><!--Panels--><!--
+                            <Grid Grid.Row="0" Margin="15,0,15,15">
+
+                                --><!--MySQL--><!--
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    --><!--Server--><!--
+                                    <StackPanel>
+                                        <Label Content="Server"/>
+                                        <TextBox Text="{Binding AddMySQLServer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+                                    
+                                    --><!--Port--><!--
+                                    <StackPanel Grid.Column="1" MinWidth="100">
+                                        <Label Content="Port"/>
+                                        <TextBox Text="{Binding AddMySQLPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+
+                                    --><!--Add MySQL Button--><!--
+                                    <Button Grid.Column="2" Padding="15,0" Margin="20,0,0,0" Content="Add MySQL" Click="AddMySQL_Click" VerticalAlignment="Bottom" Height="34">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AddMySQLServer}" Value="{x:Null}">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AddMySQLServer}" Value="">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
+
+                            </Grid>
+
+                        </Grid>
+
+                    </Border>
+                </Grid>
+            </TabItem>-->
+            
+            <!--DataServers Tab--><!--
+            <TabItem Header="DataServer" Height="25" MinWidth="120">
+                <Grid Grid.Column="1" Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="64*"/>
+                        <ColumnDefinition Width="17*"/>
+                        <ColumnDefinition Width="900*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        --><!--DataServer List--><!--
+                        <ListBox ItemsSource="{Binding DataServerItems}" SelectedItem="{Binding SelectedDataServer,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" MinWidth="125" BorderThickness="0,0,1,0">
+                            <ListBox.Resources>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="MinHeight" Value="35"/>
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
+
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+                        <Border Grid.Column="2" MinWidth="300" BorderThickness="1,0,0,0" Padding="15,0,0,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedDataServer}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <StackPanel>
+                                <Label Content="DataServer 属性" Margin="0,0,0,5"/>
+
+                                --><!--DataHosting Properties-->
+                                <!--<Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedDataServer.Hostname}" Value="streaming.trakhound.com">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+
+                                    -->
+                                <!--Delete Button-->
+                                <!--
+                                    <Button Margin="0,0,15,0" Padding="15,8" HorizontalAlignment="Right" Content="Delete" Click="DeleteDataServer_Clicked" Height="34" Style="{StaticResource Button_Transparent_Background}" />
+                                </Grid>-->
+
+                                <!--Custom Properties--><!--
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedDataServer.Hostname}" Value="streaming.trakhound.com">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    --><!--Hostname--><!--
+                                    <Label Content="Hostname"/>
+                                    <TextBox Text="{Binding SelectedDataServerHostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    --><!--Port--><!--
+                                    <Label Content="Port"/>
+                                    <TextBox Width="100" HorizontalAlignment="Left" Text="{Binding SelectedDataServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    --><!--UseSSL--><!--
+                                    <CheckBox Grid.Column="2" Height="40" Content="Use SSL" IsChecked="{Binding SelectedDataServerUseSSL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="-10,10,0,0"/>
+
+                                    --><!--Send Interval--><!--
+                                    <Label Content="Send Interval"/>
+                                    <TextBox Width="100" HorizontalAlignment="Left" Text="{Binding SelectedDataServerSendInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,40,0,0">
+
+                                        --><!--Delete Button--><!--
+                                        <Button Margin="0,0,15,0" Padding="15,8" Content="Delete" Click="DeleteDataServer_Click" Height="34" />
+
+                                        --><!--Save Button--><!--
+                                        <Button Margin="0,0,15,0" Padding="15,8" Content="Save" Click="SaveDataServer_Click" Height="34">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedDataServerHostname}" Value="{x:Null}">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding SelectedDataServerHostname}" Value="">
+                                                            <Setter Property="IsEnabled" Value="false"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    --><!--Add DataServer Panel--><!--
+                    <Border Grid.Row="1" BorderThickness="0,1,0,0" Grid.ColumnSpan="3">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            --><!--Panels--><!--
+                            <Grid Grid.Row="0" Margin="15,0,15,15">
+
+                                --><!--Custom DataServer--><!--
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    --><!--Hostname--><!--
+                                    <StackPanel>
+                                        <Label Content="Hostname"/>
+                                        <TextBox Text="{Binding AddDataServerHostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+
+                                    --><!--Port--><!--
+                                    <StackPanel Grid.Column="1" MinWidth="100">
+                                        <Label Content="Port"/>
+                                        <TextBox Text="{Binding AddDataServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+
+                                    --><!--UseSSL--><!--
+                                    <CheckBox Grid.Column="2"  Content="Use SSL" HorizontalAlignment="Center" VerticalAlignment="Center"  IsChecked="{Binding AddDataServerUseSSL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,28,30,3" RenderTransformOrigin="0.704,1.062" Height="17"/>
+
+                                    --><!--Add DataServer Button--><!--
+                                    <Button Grid.Column="3" Padding="15,8" Content="Add DataServer" Click="AddDataServer_Click" VerticalAlignment="Bottom" Height="34">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AddDataServerHostname}" Value="{x:Null}">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding AddDataServerHostname}" Value="">
+                                                        <Setter Property="IsEnabled" Value="false"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                </Grid>
+
+                            </Grid>
+
+                        </Grid>
+
+                    </Border>
+                </Grid>
+
+            </TabItem>-->
+            <TabItem Header="DataClient" Height="25" MinWidth="120">
+                <Grid Grid.Column="1" Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">         
+                        <Label Content="Collecting Data From MTConnect Client" Height="35"/> 
+                    </StackPanel>
+                    <Grid Grid.Row="1" MinHeight="50">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Start" Height="35" Click="StartCollectButton_Click" HorizontalAlignment="Right" Margin="0,0,10,0" MinWidth="100"/>
+                        <Button Grid.Column="1" Content="Stop" Height="35" Click="StopCollectButton_Click" HorizontalAlignment="Left" Margin="10,0,0,0" MinWidth="100"/>
+                    </Grid>
+                    
+                    <Grid Grid.Row="2">
+                        <StackPanel Orientation="Horizontal" MinHeight="50" VerticalAlignment="Bottom">
+                            <Label Content="Status : " Margin="15,0,0,0" VerticalAlignment="Center"/>
+                            <Label x:Name="statusLabel" Content="MTC2SQL Stopped.." VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+
+                </Grid>
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+
+</Window>
